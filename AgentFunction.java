@@ -33,16 +33,17 @@ class AgentFunction {
 	private boolean stench;
 	private boolean scream;
 	private Random rand;
+	private double probability = Math.random();
 
 	public AgentFunction()
 	{
 		// for illustration purposes; you may delete all code
-		// inside this constructor when implementing your 
+		// inside this constructor when implementing your
 		// own intelligent agent
 
 		// this integer array will store the agent actions
 		actionTable = new int[8];
-				  
+
 		actionTable[0] = Action.GO_FORWARD;
 		actionTable[1] = Action.GO_FORWARD;
 		actionTable[2] = Action.GO_FORWARD;
@@ -51,7 +52,7 @@ class AgentFunction {
 		actionTable[5] = Action.TURN_LEFT;
 		actionTable[6] = Action.GRAB;
 		actionTable[7] = Action.SHOOT;
-		
+
 		// new random number generator, for
 		// randomly picking actions to execute
 		rand = new Random();
@@ -63,20 +64,52 @@ class AgentFunction {
 		// all code below this comment block. You have
 		// access to all percepts through the object
 		// 'tp' as illustrated here:
-		
+
 		// read in the current percepts
 		bump = tp.getBump();
 		glitter = tp.getGlitter();
 		breeze = tp.getBreeze();
 		stench = tp.getStench();
 		scream = tp.getScream();
-		
-		if (bump == true || glitter == true || breeze == true || stench == true || scream == true) {
-			// do something...?
+
+		if(glitter==true)
+		{
+			return Action.GRAB;
 		}
-		
-		// return action to be performed
-	    return actionTable[rand.nextInt(8)];	    
+		else if(bump == true)
+		{
+			if(probability < .5)
+			{
+				return Action.TURN_RIGHT;
+			}
+			else
+			{
+				return Action.TURN_LEFT;
+			}
+		}
+		else if(stench==true)
+		{
+            return Action.SHOOT;
+		}
+		else if(scream == true && breeze == false)
+		{
+			return Action.GO_FORWARD;
+		}
+		else if (bump == false && glitter == false && breeze == false && stench == false && scream == false)
+		{
+			return Action.GO_FORWARD;
+		}
+		else
+        {
+            if(probability < .5)
+            {
+                return Action.TURN_RIGHT;
+            }
+            else
+            {
+                return Action.TURN_LEFT;
+            }
+        }
 	}
 	
 	// public method to return the agent's name

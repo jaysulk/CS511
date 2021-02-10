@@ -33,7 +33,6 @@ class AgentFunction {
 	private boolean stench;
 	private boolean scream;
 	private Random rand;
-	private double probability = Math.random();
 
 	public AgentFunction()
 	{
@@ -78,6 +77,7 @@ class AgentFunction {
 		}
 		else if(bump == true)
 		{
+			private double probability = Math.random();
 			if(probability < .5)
 			{
 				return Action.TURN_RIGHT;
@@ -101,6 +101,7 @@ class AgentFunction {
 		}
 		else
         {
+			private double probability = Math.random();
             if(probability < .5)
             {
                 return Action.TURN_RIGHT;

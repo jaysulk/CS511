@@ -37,8 +37,6 @@ public class Model {
                 break;
             case 5: // SHOOT
                 break;
-            case 6: // NO_OP
-                break;
         }
     }
 

@@ -1,28 +1,30 @@
 // Based upon https://github.com/sanjayr93/wumpus-ai-agents/tree/master/model-based-agent/wumpuslite
+// Tweaked, updated, and fixed
+
 public class Model {
 
-    private Cell[][] map;
-    private int agentOrientation;
-    private int[] agentLocation, nextAgentLocation;
-    private int previousAction;
+    public Grid[][] map;
+    public int agentOrientation;
+    public int[] agentLocation, nextAgentLocation;
+    public int previousAction;
 
     public Model(){
         int worldSize = 4;
-        map = new Cell[worldSize][worldSize];
+        map = new Grid[worldSize][worldSize];
         for(int i = 0; i < worldSize; i++){
             for(int j = 0; j < worldSize; j++){
-                map[i][j] = new Cell();
+                map[i][j] = new Grid();
             }
         }
 
         agentOrientation = Orientation.EAST;
         agentLocation = new int[]{map.length - 1, 0}; 
-        map[agentLocation[0]][agentLocation[1]].setVisited(true);
+        map[agentLocation[0]][agentLocation[1]].visited = true;
         nextAgentLocation = new int[]{-1, -1};
         previousAction = Action.NO_OP; // Initialize previous action to NO_OP since we have done nothing yet.
     }
     
-    public void updateModelOnAction(){
+    public void updateOnAction(){
         switch (previousAction){
             case 1: // GO_FORWARD
                 updateAgentLocation();
@@ -35,12 +37,10 @@ public class Model {
                 break;
             case 4: // GRAB
                 break;
-            case 5: // SHOOT
-                break;
         }
     }
 
-    public void updateModelOnPercept(boolean breeze, boolean stench, boolean bump, boolean scream, boolean glitter){
+    public void updateOnPercept(boolean breeze, boolean stench, boolean glitter){
         if(breeze){
             Utils.setFlags(this, Utils.pit, "X", false);
         }
@@ -54,9 +54,9 @@ public class Model {
                             location[0] = i;
                             location[1] = j;
                         }else{
-                            map[i][j].getFlags().put(Utils.wumpus, "");
+                            map[i][j].getFlags().put(Utils.wumpus, "O");
                             if(!map[i][j].getFlags().get(Utils.pit).equals("X")){
-                                map[i][j].setSafe(true);
+                                map[i][j].safe = true;
                             }
                         }
                     }
@@ -65,36 +65,33 @@ public class Model {
             if(location[0] == -1) {
                 Utils.setFlags(this, Utils.wumpus, "X", false);
             }else{
-                if(agentLocation[0] + 1 < map.length && !map[agentLocation[0] + 1][agentLocation[1]].isSafe()
+                if(agentLocation[0] + 1 < map.length && !map[agentLocation[0] + 1][agentLocation[1]].safe
                         && (agentLocation[0] + 1 != location[0] && agentLocation[1] != location[1])){
                     if(!(map[agentLocation[0] + 1][agentLocation[1]].getFlags().get(Utils.pit).equals("X") ||
                             map[agentLocation[0] + 1][agentLocation[1]].getFlags().get(Utils.wumpus).equals("X")))
-                        map[agentLocation[0] + 1][agentLocation[1]].setSafe(true);
+                        map[agentLocation[0] + 1][agentLocation[1]].safe = true;
                 }
-                if(agentLocation[0] - 1 >= 0 && !map[agentLocation[0] - 1][agentLocation[1]].isSafe() && (agentLocation[0] - 1 != location[0] && agentLocation[1] != location[1])) {
+                if(agentLocation[0] - 1 >= 0 && !map[agentLocation[0] - 1][agentLocation[1]].safe && (agentLocation[0] - 1 != location[0] && agentLocation[1] != location[1])) {
                     if(!(map[agentLocation[0] - 1][agentLocation[1]].getFlags().get(Utils.pit).equals("X") ||
                             map[agentLocation[0] - 1][agentLocation[1]].getFlags().get(Utils.wumpus).equals("X")))
-                        map[agentLocation[0] - 1][agentLocation[1]].setSafe(true);
+                        map[agentLocation[0] - 1][agentLocation[1]].safe = true;
                 }
-                if(agentLocation[1] + 1 < map[0].length && !map[agentLocation[0]][agentLocation[1] + 1].isSafe() && (agentLocation[0] != location[0] && agentLocation[1] + 1 != location[1])){
+                if(agentLocation[1] + 1 < map[0].length && !map[agentLocation[0]][agentLocation[1] + 1].safe && (agentLocation[0] != location[0] && agentLocation[1] + 1 != location[1])){
                     if(!(map[agentLocation[0]][agentLocation[1] + 1].getFlags().get(Utils.pit).equals("X") ||
                             map[agentLocation[0]][agentLocation[1] + 1].getFlags().get(Utils.wumpus).equals("X")))
-                        map[agentLocation[0]][agentLocation[1] + 1].setSafe(true);
+                        map[agentLocation[0]][agentLocation[1] + 1].safe = true;
                 }
-                if(agentLocation[1] - 1 >= 0 && !map[agentLocation[0]][agentLocation[1] - 1].isSafe() && (agentLocation[0] != location[0] && agentLocation[1] - 1 != location[1])){
+                if(agentLocation[1] - 1 >= 0 && !map[agentLocation[0]][agentLocation[1] - 1].safe && (agentLocation[0] != location[0] && agentLocation[1] - 1 != location[1])){
                     if(!(map[agentLocation[0]][agentLocation[1] - 1].getFlags().get(Utils.pit).equals("X") ||
                             map[agentLocation[0]][agentLocation[1] + 1].getFlags().get(Utils.wumpus).equals("X")))
-                        map[agentLocation[0]][agentLocation[1] - 1].setSafe(true);
+                        map[agentLocation[0]][agentLocation[1] - 1].safe = true;
                 }
             }
         }
-//        if(bump){
-//            Utils.setFlags(this, Utils.wall, "X", false);
-//        }
 //        if(glitter){
 //            Utils.setFlags(this, Utils.gold, "X", true);
 //        }
-        map[agentLocation[0]][agentLocation[1]].setSafe(true);
+        map[agentLocation[0]][agentLocation[1]].safe = true;
         if(!breeze && !stench)
             Utils.setFlags(this, null, null, true);
     }
@@ -125,16 +122,16 @@ public class Model {
             case 3:
                 if(direction == 0){ 
                     agentOrientation = Orientation.NORTH;
-                }else{ //left
+                }else{ 
                     agentOrientation = Orientation.SOUTH;
                 }
                 break;
         }
 
     }
-
+    
     private void updateAgentLocation() {
-        //Update the agent location for the Forward action..
+
         switch (agentOrientation){
             case 0:
                 if(agentLocation[0] - 1 >= 0) 
@@ -154,49 +151,9 @@ public class Model {
                 break;
         }
 
-        if(!map[agentLocation[0]][agentLocation[1]].isVisited()){
-            map[agentLocation[0]][agentLocation[1]].setVisited(true);
+        if(!map[agentLocation[0]][agentLocation[1]].visited){
+            map[agentLocation[0]][agentLocation[1]].visited = true;
         }
     }
-
-    public void resetNextAgentLocation() {
-        nextAgentLocation[0] = -1;
-        nextAgentLocation[1] = -1;
-    }
-
-    public int[] getAgentLocation() {
-        return agentLocation;
-    }
-
-    public int[] getNextAgentLocation() {
-        return nextAgentLocation;
-    }
-
-//    public void setAgentLocation(int[] agentLocation) {
-//        this.agentLocation = agentLocation;
-//    }
-
-    public Cell[][] getWorld() {
-        return map;
-    }
-
-//    public void setWorld(Cell[][] map) {
-//        this.map = map;
-//    }
-
-    public int getAgentOrientation() {
-        return agentOrientation;
-    }
-
-//    public void setAgentOrientation(int agentOrientation) {
-//        this.agentOrientation = agentOrientation;
-//    }
-//
-//    public int getPreviousAction() {
-//        return previousAction;
-//    }
-
-    public void setPreviousAction(int previousAction) {
-        this.previousAction = previousAction;
-    }
+    
 }

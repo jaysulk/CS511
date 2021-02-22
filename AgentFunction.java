@@ -75,62 +75,63 @@ class AgentFunction {
 		if(glitter){
 			return Action.GRAB;
 		}
-
-		//updating the model based on last action
-		model.updateModelOnAction();
-		//updating the model based on current percepts
-		model.updateModelOnPercept(breeze, stench, bump, scream, glitter);
-
-		//Condition - Action Rules
+		
 		if (bump) {
 			double probability = Math.random();
 			if(probability < .5)
 			{
-				model.setPreviousAction(Action.TURN_RIGHT);
+				model.previousAction = Action.TURN_RIGHT;
 				return Action.TURN_RIGHT;
 			}
 			else
 			{
-				model.setPreviousAction(Action.TURN_LEFT);
+				model.previousAction = Action.TURN_LEFT;
 				return Action.TURN_LEFT;
 			}
 		}
 
-		int[] agentLocation = model.getAgentLocation();
+		model.updateOnAction();
+		model.updateOnPercept(breeze, stench, glitter);
 
-		if(agentLocation[1] + 1 < model.getWorld()[0].length){
-			Utils.resolve(model, agentLocation[0], agentLocation[1] + 1, tp);
+		if(model.agentLocation[1] + 1 < model.map[0].length){
+			Utils.resolvePercept(model, model.agentLocation[0], model.agentLocation[1] + 1, tp);
 		}
 
-		if(agentLocation[1] - 1 >= 0){
-			Utils.resolve(model, agentLocation[0], agentLocation[1] - 1, tp);
+		if(model.agentLocation[1] - 1 >= 0){
+			Utils.resolvePercept(model, model.agentLocation[0], model.agentLocation[1] - 1, tp);
 		}
 
-		if(agentLocation[0] - 1 >= 0){
-			Utils.resolve(model, agentLocation[0] - 1, agentLocation[1], tp);
+		if(model.agentLocation[0] - 1 >= 0){
+			Utils.resolvePercept(model, model.agentLocation[0] - 1, model.agentLocation[1], tp);
 		}
 
-		if(agentLocation[0] + 1 < model.getWorld().length){
-			Utils.resolve(model, agentLocation[0] + 1, agentLocation[1], tp);
+		if(model.agentLocation[0] + 1 < model.map.length){
+			Utils.resolvePercept(model, model.agentLocation[0] + 1, model.agentLocation[1], tp);
 		}
 
 		int[] location = Utils.getNextSafeCell(model);
 
-		if (Utils.check(model, location)) {
-			model.resetNextAgentLocation() ;
-			model.setPreviousAction(Action.GO_FORWARD);
+		if (Utils.isSafe(model, location)) {
+			model.nextAgentLocation[0] = -1;
+			model.nextAgentLocation[1] = -1;
+			model.previousAction = Action.GO_FORWARD;
 			return Action.GO_FORWARD;
 		}
+
+//		if (!Utils.isSafe(model, location)) {
+//			model.previousAction = Action.SHOOT;
+//			return Action.SHOOT;
+//		}
 
 		double probability = Math.random();
 		if(probability < .5)
 		{
-			model.setPreviousAction(Action.TURN_RIGHT);
+			model.previousAction = Action.TURN_RIGHT;
 			return Action.TURN_RIGHT;
 		}
 		else
 		{
-			model.setPreviousAction(Action.TURN_LEFT);
+			model.previousAction = Action.TURN_LEFT;
 			return Action.TURN_LEFT;
 		}
 	}

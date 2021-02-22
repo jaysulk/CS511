@@ -21,7 +21,7 @@ class AgentFunction {
 	
 	// string to store the agent's name
 	// do not remove this variable
-	private String agentName = "Agent Smith";
+	private String agentName = "Heisenberg";
 	
 	// all of these variables are created and used
 	// for illustration purposes; you may delete them
@@ -77,7 +77,7 @@ class AgentFunction {
 		}
 		else if(bump == true)
 		{
-			private double probability = Math.random();
+			double probability = Math.random();
 			if(probability < .5)
 			{
 				return Action.TURN_RIGHT;
@@ -101,7 +101,7 @@ class AgentFunction {
 		}
 		else
         {
-			private double probability = Math.random();
+			double probability = Math.random();
             if(probability < .5)
             {
                 return Action.TURN_RIGHT;
